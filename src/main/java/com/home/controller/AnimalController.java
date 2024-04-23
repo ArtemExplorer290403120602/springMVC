@@ -1,11 +1,15 @@
 package com.home.controller;
 
 import com.home.model.Animal;
+import com.home.model.dto.AnimalCreateDto;
 import com.home.service.AnimalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -46,8 +50,14 @@ public class AnimalController {
     }
 
     @PostMapping()
-    public String createAnimal(@RequestParam("name") String name, @RequestParam("age") Integer age, @RequestParam("place") String place) {
-        boolean br = animalService.createAnimal(name, age, place); //TODO: УЗНАТЬ ПОЧЕМУ НЕ МОГУ ДОБАВИТЬ
+    public String createAnimal(@ModelAttribute AnimalCreateDto animalCreateDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            for (ObjectError error : bindingResult.getAllErrors()) {
+                System.out.println(error);
+            }
+            return "failed";
+        }
+        boolean br = animalService.createAnimal(animalCreateDto); //TODO: УЗНАТЬ ПОЧЕМУ НЕ МОГУ ДОБАВИТЬ
         return br ? "cool" : "failed";
     }
 
