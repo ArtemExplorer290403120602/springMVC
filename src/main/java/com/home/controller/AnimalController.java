@@ -3,6 +3,7 @@ package com.home.controller;
 import com.home.model.Animal;
 import com.home.model.dto.AnimalCreateDto;
 import com.home.service.AnimalService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @RequestMapping("/animal")
 public class AnimalController {
@@ -36,11 +38,13 @@ public class AnimalController {
 
     @GetMapping("/id")
     public String getAnimalById(@RequestParam("id") Long id, ModelMap modelMap) { //TODO: Спросить почему не работает с @PathVariable во всех
+        log.info("Получиили животное по id: ", id);
         Optional<Animal> animal = animalService.getAnimalById(id);
         if (animal.isPresent()) {
             modelMap.addAttribute("animal", animal.get());
             return "get_animal_by_id";
         }
+        log.error("Не удалось найти животное по id: " + id);
         return "failed";
     }
 
@@ -53,12 +57,18 @@ public class AnimalController {
     public String createAnimal(@ModelAttribute AnimalCreateDto animalCreateDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             for (ObjectError error : bindingResult.getAllErrors()) {
-                System.out.println(error);
+                log.error("Ошибка при создании животного: " + error.getDefaultMessage());
             }
             return "failed";
         }
         boolean br = animalService.createAnimal(animalCreateDto); //TODO: УЗНАТЬ ПОЧЕМУ НЕ МОГУ ДОБАВИТЬ
-        return br ? "cool" : "failed";
+        if(br) {
+            log.info("Животное создалось");
+            return "cool";
+        } else {
+            log.error("Животное не создалось");
+            return "failed";
+        }
     }
 
     @PostMapping("/update")
