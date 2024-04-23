@@ -1,6 +1,7 @@
 package com.home.service;
 
 import com.home.model.Animal;
+import com.home.model.dto.AnimalCreateDto;
 import com.home.repository.AnimalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,11 +38,11 @@ public class AnimalService {
     }
 
     //добавляем животное
-    public Boolean createAnimal(String name, Integer age, String place) {
+    public Boolean createAnimal(AnimalCreateDto animalCreateDto) {
         Animal animal1 = new Animal();
-        animal1.setName(name);
-        animal1.setAge(age);
-        animal1.setPlace(place);
+        animal1.setName(animalCreateDto.getName());
+        animal1.setAge(animalCreateDto.getAge());
+        animal1.setPlace(animalCreateDto.getPlace());
         animal1.setBirth(Timestamp.valueOf(LocalDateTime.now()));
         return animalRepository.createAnimal(animal1);
     }
